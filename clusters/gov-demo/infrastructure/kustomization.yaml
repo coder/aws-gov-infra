@@ -1,0 +1,8 @@
+# FluxCD Infrastructure Kustomization for aws-gov-infra
+# Additional platform services layered on top of coder4gov
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespaces.yaml
+  - sources/
+  - secrets/

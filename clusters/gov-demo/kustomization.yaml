@@ -1,0 +1,6 @@
+# FluxCD entry point for aws-gov-infra cluster manifests
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - infrastructure/
+  - apps/

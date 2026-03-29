@@ -1,0 +1,7 @@
+# HelmRepository sources for non-Coder platform services
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - coder-observability.yaml
+  - bitnami.yaml
+  - litellm.yaml
