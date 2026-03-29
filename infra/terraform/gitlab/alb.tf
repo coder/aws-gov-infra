@@ -139,7 +139,7 @@ resource "aws_lb_listener" "gitlab_http_redirect" {
 
 resource "aws_wafv2_web_acl" "gitlab" {
   name        = "${var.project_name}-gitlab-waf"
-  description = "WAF for GitLab ALB — AWS Managed Rules (SEC-012)"
+  description = "WAF for GitLab ALB - AWS Managed Rules"
   scope       = "REGIONAL"
 
   default_action {

@@ -76,17 +76,3 @@ data "terraform_remote_state" "data" {
   }
 }
 
-# ---------------------------------------------------------------------------
-# Remote State — Layer 3 (EKS)
-# Cluster endpoint, security groups (reserved for future cross-references)
-# ---------------------------------------------------------------------------
-
-data "terraform_remote_state" "eks" {
-  backend = "s3"
-
-  config = {
-    bucket = "coder4gov-terraform-state"
-    key    = "3-eks/terraform.tfstate"
-    region = var.aws_region
-  }
-}

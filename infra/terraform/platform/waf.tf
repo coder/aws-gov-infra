@@ -35,7 +35,7 @@ resource "aws_wafv2_ip_set" "admin_allowlist" {
 
 resource "aws_wafv2_web_acl" "eks" {
   name        = "${var.project_name}-eks-waf"
-  description = "WAF Web ACL for EKS-hosted services (Coder, Keycloak, LiteLLM)."
+  description = "WAF Web ACL for EKS-hosted services"
   scope       = "REGIONAL"
 
   default_action {

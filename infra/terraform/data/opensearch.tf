@@ -153,13 +153,6 @@ resource "aws_iam_role_policy" "opensearch_ingestion" {
 # These forward logs from existing CloudWatch log groups.
 # ---------------------------------------------------------------------------
 
-# CloudTrail log group (created in Layer 1 or by AWS)
-variable "cloudtrail_log_group_name" {
-  description = "CloudWatch Log Group for CloudTrail events."
-  type        = string
-  default     = "/aws/cloudtrail/coder4gov"
-}
-
 resource "aws_cloudwatch_log_subscription_filter" "cloudtrail" {
   name            = "${var.project_name}-cloudtrail-to-opensearch"
   log_group_name  = var.cloudtrail_log_group_name

@@ -7,8 +7,6 @@
 
 data "aws_caller_identity" "current" {}
 
-data "aws_region" "current" {}
-
 # ---------------------------------------------------------------------------
 # Latest Amazon Linux 2023 AMI (FIPS-capable, x86_64)
 # GL-002: AL2023 with FIPS kernel
