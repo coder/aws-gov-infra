@@ -28,6 +28,12 @@ variable "domain_name" {
   default     = "coder4gov.com"
 }
 
+variable "cloudtrail_log_group_name" {
+  description = "CloudWatch log group name for CloudTrail logs (fed into OpenSearch)."
+  type        = string
+  default     = "/aws/cloudtrail/coder4gov"
+}
+
 variable "tags" {
   description = "Default tags applied to all resources."
   type        = map(string)

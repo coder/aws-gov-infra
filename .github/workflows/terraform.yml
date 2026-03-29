@@ -1,0 +1,115 @@
+# =============================================================================
+# GitHub Actions — Terraform Validation
+# =============================================================================
+# Validates all Terraform layers on every push or pull request that touches
+# infra/terraform/.
+#
+# Jobs:
+#   fmt       — checks formatting across all layers
+#   validate  — runs `terraform init -backend=false && terraform validate` per layer
+#   tflint    — lints each layer with the AWS ruleset (see .tflint.hcl)
+#   security  — Trivy IaC scan for HIGH/CRITICAL misconfigurations (advisory)
+# =============================================================================
+
+name: "Terraform"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "infra/terraform/**"
+  pull_request:
+    paths:
+      - "infra/terraform/**"
+
+concurrency:
+  group: terraform-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # fmt — check formatting
+  # ---------------------------------------------------------------------------
+  fmt:
+    name: "Format Check"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.10.0"
+
+      - name: terraform fmt
+        run: terraform fmt -check -recursive infra/terraform/
+
+  # ---------------------------------------------------------------------------
+  # validate — init (no backend) + validate for each layer
+  # ---------------------------------------------------------------------------
+  validate:
+    name: "Validate (${{ matrix.layer }})"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        layer:
+          - data
+          - gitlab
+          - platform
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.10.0"
+
+      - name: terraform init (no backend)
+        run: terraform init -backend=false
+        working-directory: infra/terraform/${{ matrix.layer }}
+
+      - name: terraform validate
+        run: terraform validate
+        working-directory: infra/terraform/${{ matrix.layer }}
+
+  # ---------------------------------------------------------------------------
+  # tflint — lint each layer with the AWS plugin
+  # ---------------------------------------------------------------------------
+  tflint:
+    name: "TFLint (${{ matrix.layer }})"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        layer:
+          - data
+          - gitlab
+          - platform
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: terraform-linters/setup-tflint@v4
+
+      - name: tflint init
+        run: tflint --init --config=../../../.tflint.hcl
+        working-directory: infra/terraform/${{ matrix.layer }}
+
+      - name: tflint
+        run: tflint --config=../../../.tflint.hcl
+        working-directory: infra/terraform/${{ matrix.layer }}
+
+  # ---------------------------------------------------------------------------
+  # security — Trivy IaC scan (advisory / allow-failure)
+  # ---------------------------------------------------------------------------
+  security:
+    name: "Trivy IaC Scan"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Trivy (config scan)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: config
+          scan-ref: infra/terraform/
+          severity: HIGH,CRITICAL
+        continue-on-error: true

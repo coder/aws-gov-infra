@@ -88,7 +88,7 @@ resource "aws_launch_template" "gitlab" {
       volume_type           = "gp3"
       encrypted             = true
       kms_key_id            = local.kms_key_arn
-      delete_on_termination = false  # Preserve data on instance replacement
+      delete_on_termination = false # Preserve data on instance replacement
       iops                  = 3000
       throughput            = 250
     }
@@ -103,18 +103,18 @@ resource "aws_launch_template" "gitlab" {
   user_data = base64encode(templatefile(
     "${path.module}/templates/userdata.sh.tftpl",
     {
-      aws_region           = var.aws_region
-      project_name         = var.project_name
-      domain_name          = var.domain_name
-      s3_backup_bucket     = local.s3_backup_bucket
-      s3_artifacts_bucket  = local.s3_artifacts_bucket
-      s3_lfs_bucket        = local.s3_lfs_bucket
-      s3_uploads_bucket    = local.s3_uploads_bucket
-      s3_packages_bucket   = local.s3_packages_bucket
-      s3_registry_bucket   = local.s3_registry_bucket
-      ses_endpoint         = local.ses_endpoint
-      data_device          = local.data_device
-      data_aws_account_id  = data.aws_caller_identity.current.account_id
+      aws_region          = var.aws_region
+      project_name        = var.project_name
+      domain_name         = var.domain_name
+      s3_backup_bucket    = local.s3_backup_bucket
+      s3_artifacts_bucket = local.s3_artifacts_bucket
+      s3_lfs_bucket       = local.s3_lfs_bucket
+      s3_uploads_bucket   = local.s3_uploads_bucket
+      s3_packages_bucket  = local.s3_packages_bucket
+      s3_registry_bucket  = local.s3_registry_bucket
+      ses_endpoint        = local.ses_endpoint
+      data_device         = local.data_device
+      data_aws_account_id = data.aws_caller_identity.current.account_id
     }
   ))
 
@@ -158,7 +158,7 @@ resource "aws_autoscaling_group" "gitlab" {
 
   # Health check via ALB target group
   health_check_type         = "ELB"
-  health_check_grace_period = 600  # GitLab takes ~5-10 min to start
+  health_check_grace_period = 600 # GitLab takes ~5-10 min to start
 
   # Use latest launch template version
   launch_template {
@@ -173,7 +173,7 @@ resource "aws_autoscaling_group" "gitlab" {
   instance_refresh {
     strategy = "Rolling"
     preferences {
-      min_healthy_percentage = 0  # min=1,max=1 means we must allow 0 during refresh
+      min_healthy_percentage = 0 # min=1,max=1 means we must allow 0 during refresh
     }
   }
 

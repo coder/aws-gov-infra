@@ -20,7 +20,7 @@ resource "aws_opensearchserverless_security_policy" "encryption" {
       }
     ]
     AWSOwnedKey = false
-    KmsARN      = aws_kms_key.main.arn
+    KmsARN      = local.kms_key_arn
   })
 }
 
